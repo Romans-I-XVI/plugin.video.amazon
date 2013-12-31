@@ -1,0 +1,232 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import re
+import time
+import urllib
+import demjson
+import xbmcplugin
+import xbmc
+import xbmcgui
+import os
+import subprocess
+import resources.lib.common as common
+
+from BeautifulSoup import BeautifulStoneSoup
+from BeautifulSoup import BeautifulSoup
+try:
+    from xml.etree import ElementTree
+except:
+    from elementtree import ElementTree
+
+pluginhandle = common.pluginhandle
+
+def GETSUBTITLES(values):
+    getsubs  = 'https://atv-ps.amazon.com/cdp/catalog/GetSubtitleUrls'
+    getsubs += '?NumberOfResults=1'
+    getsubs += '&firmware=LNX%2010,3,181,14%20PlugIn'
+    getsubs += '&deviceTypeID='+values['deviceTypeID']
+    getsubs += '&customerID='+values['customerID']
+    getsubs += '&deviceID='+values['deviceID']
+    getsubs += '&format=json'
+    getsubs += '&asin='+values['asin']
+    getsubs += '&version=2'
+    getsubs += '&token='+values['token']
+    getsubs += '&videoType=content'
+    data = common.getURL(getsubs,'atv-ps.amazon.com',useCookie=True)
+    subtitleLanguages = demjson.decode(data)['message']['body']['subtitles']['content']['languages']
+    if len(subtitleLanguages) > 0:
+        subtitleUrl = subtitleLanguages[0]['url']
+        subtitles = CONVERTSUBTITLES(subtitleUrl)
+        common.SaveFile(os.path.join(common.pluginpath,'resources','cache',values['asin']+'.srt'), subtitles)
+
+def CONVERTSUBTITLES(url):
+    xml=common.getURL(url)
+    tree = BeautifulStoneSoup(xml, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+    lines = tree.find('tt:body').findAll('tt:p')
+    stripTags = re.compile(r'<.*?>',re.DOTALL)
+    spaces = re.compile(r'\s\s\s+')
+    srt_output = ''
+    count = 1
+    displaycount = 1
+    for line in lines:
+        sub = line.renderContents()
+        sub = stripTags.sub(' ', sub)
+        sub = spaces.sub(' ', sub)
+        sub = sub.decode('utf-8')
+        start = line['begin'].replace('.',',')
+        if count < len(lines):
+            end = line['end'].replace('.',',')
+        line = str(displaycount)+"\n"+start+" --> "+end+"\n"+sub+"\n\n"
+        srt_output += line
+        count += 1
+        displaycount += 1
+    return srt_output.encode('utf-8')
+
+def SETSUBTITLES(asin):
+    subtitles = os.path.join(common.pluginpath,'resources','cache',asin+'.srt')
+    if os.path.isfile(subtitles) and xbmc.Player().isPlaying():
+        print "AMAZON --> Subtitles Enabled."
+        xbmc.Player().setSubtitles(subtitles)
+    elif xbmc.Player().isPlaying():
+        print "AMAZON --> Subtitles File Available."
+    else:
+        print "AMAZON --> No Media Playing. Subtitles Not Assigned."
+
+def GETTRAILERS(getstream):
+    try:
+        data = common.getURL(getstream,'atv-ps.amazon.com')
+        print data
+        rtmpdata = demjson.decode(data)
+        print rtmpdata
+        sessionId = rtmpdata['message']['body']['streamingURLInfoSet']['sessionId']
+        cdn = rtmpdata['message']['body']['streamingURLInfoSet']['cdn']
+        rtmpurls = rtmpdata['message']['body']['streamingURLInfoSet']['streamingURLInfo']
+        return rtmpurls, sessionId, cdn
+    except:
+        return False, False, False
+
+def PLAYTRAILER_RESOLVE():
+    PLAYTRAILER(resolve=True)
+
+def PLAYTRAILER(resolve=False):
+    videoname = common.args.name
+    swfUrl, values, owned = GETFLASHVARS(common.args.url) 
+    values['deviceID'] = values['customerID'] + str(int(time.time() * 1000)) + values['asin']
+    getstream  = 'https://atv-ps.amazon.com/cdp/catalog/GetStreamingTrailerUrls'
+    getstream += '?asin='+values['asin']
+    getstream += '&deviceTypeID='+values['deviceTypeID']
+    getstream += '&deviceID='+values['deviceID']
+    getstream += '&firmware=LNX%2010,3,181,14%20PlugIn'
+    getstream += '&format=json'
+    getstream += '&version=1'
+    rtmpurls, streamSessionID, cdn = GETTRAILERS(getstream)
+    if rtmpurls == False:
+        xbmcgui.Dialog().ok('Trailer Not Available',videoname)
+    elif cdn == 'limelight':
+        xbmcgui.Dialog().ok('Limelight CDN','Limelight uses swfverfiy2. Playback may fail.')
+    else:
+        PLAY(rtmpurls,swfUrl=swfUrl,Trailer=videoname,resolve=resolve)
+        
+def GETSTREAMS(getstream):
+    data = common.getURL(getstream,'atv-ps.amazon.com',useCookie=True)
+    print data
+    rtmpdata = demjson.decode(data)
+    print rtmpdata
+    #try:
+        #drm = rtmpdata['message']['body']['urlSets']['streamingURLInfoSet'][0]['drm']
+        #if drm <> 'NONE':
+            #xbmcgui.Dialog().ok('DRM Detected','This video uses %s DRM' % drm)
+    #except:pass
+    sessionId = rtmpdata['message']['body']['urlSets']['streamingURLInfoSet'][0]['sessionId']
+    cdn = rtmpdata['message']['body']['urlSets']['streamingURLInfoSet'][0]['cdn']
+    rtmpurls = rtmpdata['message']['body']['urlSets']['streamingURLInfoSet'][0]['streamingURLInfo']
+    title = rtmpdata['message']['body']['metadata']['title'].replace('[HD]','')
+    return rtmpurls, sessionId, cdn, title
+
+
+def PLAYVIDEO():
+	url=common.args.url
+	finalUrl=url.replace("http://www.amazon.com/gp/product/","http://www.amazon.com/gp/video/streaming/mini-mode.html?ie=UTF8&asin=")
+	xbmc.executebuiltin("RunPlugin(plugin://plugin.program.chrome.launcher/?url="+urllib.quote_plus(finalUrl)+"&mode=showSite&kiosk=yes)")
+        try:
+            xbmc.sleep(5000)
+            subprocess.Popen('xdotool mousemove 9999 0 click 1', shell=True)
+            xbmc.sleep(5000)
+            subprocess.Popen('xdotool mousemove 9999 0 click 1', shell=True)
+            xbmc.sleep(5000)
+            subprocess.Popen('xdotool mousemove 9999 0 click 1', shell=True)
+            xbmc.sleep(5000)
+            subprocess.Popen('xdotool mousemove 9999 0 click 1', shell=True)
+        except:
+            pass
+            
+def GETFLASHVARS(pageurl):
+    showpage = common.getURL(pageurl,useCookie=True)
+    flashVars = re.compile("'flashVars', '(.*?)' \+ new Date\(\)\.getTime\(\)\+ '(.*?)'",re.DOTALL).findall(showpage)
+    flashVars =(flashVars[0][0] + flashVars[0][1]).split('&')
+    swfUrl = re.compile("avodSwfUrl = '(.*?)'\;").findall(showpage)[0]
+    values={'token'          :'',
+            'deviceTypeID'   :'A13Q6A55DBZB7M',
+            'version'        :'1',
+            'firmware'       :'1',       
+            'customerID'     :'',
+            'format'         :'json',
+            'deviceID'       :'',
+            'asin'           :''      
+            }
+    if '<div class="avod-post-purchase">' in showpage:
+        owned=True
+    else:
+        owned=False
+    for item in flashVars:
+        item = item.split('=')
+        if item[0]      == 'token':
+            values[item[0]]         = item[1]
+        elif item[0]    == 'customer':
+            values['customerID']    = item[1]
+        elif item[0]    == 'ASIN':
+            values['asin']          = item[1]
+        elif item[0]    == 'pageType':
+            values['pageType']      = item[1]        
+        elif item[0]    == 'UBID':
+            values['UBID']          = item[1]
+        elif item[0]    == 'sessionID':
+            values['sessionID']     = item[1]
+        elif item[0]    == 'userAgent':
+            values['userAgent']     = item[1]
+    return swfUrl, values, owned
+        
+def PLAY(rtmpurls,swfUrl,Trailer=False,resolve=True,title=False):
+    print rtmpurls
+    quality = [0,2500,1328,996,664,348]
+    lbitrate = quality[int(common.addon.getSetting("bitrate"))]
+    mbitrate = 0
+    streams = []
+    for data in rtmpurls:
+        url = data['url']
+        bitrate = int(data['bitrate'])
+        if lbitrate == 0:
+            streams.append([bitrate,url])
+        elif bitrate >= mbitrate and bitrate <= lbitrate:
+            mbitrate = bitrate
+            rtmpurl = url
+    if lbitrate == 0:        
+        quality=xbmcgui.Dialog().select('Please select a quality level:', [str(stream[0])+'kbps' for stream in streams])
+        if quality!=-1:
+            rtmpurl = streams[quality][1]
+    protocolSplit = rtmpurl.split("://")
+    pathSplit   = protocolSplit[1].split("/")
+    hostname    = pathSplit[0]
+    appName     = protocolSplit[1].split(hostname + "/")[1].split('/')[0]    
+    streamAuth  = rtmpurl.split(appName+'/')[1].split('?')
+    stream      = streamAuth[0].replace('.mp4','')
+    auth        = streamAuth[1]
+    identurl = 'http://'+hostname+'/fcs/ident'
+    ident = common.getURL(identurl)
+    ip = re.compile('<fcs><ip>(.+?)</ip></fcs>').findall(ident)[0]
+    basertmp = 'rtmpe://'+ip+':1935/'+appName+'?_fcs_vhost='+hostname+'&ovpfv=2.1.4&'+auth
+    finalUrl = basertmp
+    finalUrl += " playpath=" + stream 
+    finalUrl = common.args.url
+    #finalUrl += " swfurl=" + swfUrl + " swfvfy=true"
+    finalUrl = finalUrl.replace("http://www.amazon.com/gp/product/","https://www.amazon.com/gp/video/streaming/mini-mode.html?asin=")
+    if Trailer and not resolve:
+        finalname = Trailer+' Trailer'
+        item = xbmcgui.ListItem(finalname,path=finalUrl)
+        item.setInfo( type="Video", infoLabels={ "Title": finalname})
+        item.setProperty('IsPlayable', 'true')
+        xbmc.Player().play(finalUrl,item)
+    else:
+        item = xbmcgui.ListItem(path=finalUrl)
+        item.setInfo( type="Video", infoLabels={ "Title": title})
+        xbmc.executebuiltin("RunPlugin(plugin://plugin.program.chrome.launcher/?url=http://www.google.com&mode=showSite&kiosk=yes&userAgent=Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0")
+        try:
+            xbmc.sleep(10000)
+            subprocess.Popen('xdotool mousemove 9999 9999 click 1', shell=True)
+            xbmc.sleep(5000)
+            subprocess.Popen('xdotool mousemove 9999 9999 click 1', shell=True)
+            xbmc.sleep(5000)
+            subprocess.Popen('xdotool mousemove 9999 9999 click 1', shell=True)
+        except:
+            pass
+    return basertmp, ip

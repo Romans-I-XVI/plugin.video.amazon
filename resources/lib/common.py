@@ -118,12 +118,7 @@ def addVideo(name,url,poster='',fanart='',infoLabels=False,totalItems=0,cm=False
     u += '?url="'+urllib.quote_plus(url)+'"'
     u += '&mode="play"'
     u += '&name="'+urllib.quote_plus(name)+'"'
-    utrailer = u+'&sitemode="PLAYTRAILER"'
-    if traileronly:
-        u += '&sitemode="PLAYTRAILER_RESOLVE"'        
-    else:
-        u += '&sitemode="PLAYVIDEO"'
-    infoLabels['Trailer']=utrailer
+    u += '&sitemode="PLAYVIDEO"'
     liz=xbmcgui.ListItem(name, thumbnailImage=poster)
     liz.setInfo( type="Video", infoLabels=infoLabels)
     try:
@@ -141,7 +136,7 @@ def addVideo(name,url,poster='',fanart='',infoLabels=False,totalItems=0,cm=False
     liz.setProperty('IsPlayable', 'true')
     if cm:
         liz.addContextMenuItems( cm , replaceItems=True )
-    xbmcplugin.addDirectoryItem(handle=pluginhandle,url=u,listitem=liz,isFolder=False,totalItems=totalItems)     
+    xbmcplugin.addDirectoryItem(handle=pluginhandle,url=u,listitem=liz,isFolder=True,totalItems=totalItems)     
 
 def setCustomer(check=False):
     if check:

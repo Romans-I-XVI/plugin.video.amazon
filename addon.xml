@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.amazon"
        name="Amazon"
-       version="0.6.9"
-       provider-name="BlueCop">
+       version="0.7.0"
+       provider-name="BlueCop + Romans I XVI">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
     <import addon="script.module.beautifulsoup" version="3.0.8"/>
     <import addon="script.module.demjson" version="1.4"/>
     <import addon="script.module.mechanize" version="0.2.5"/>
     <import addon="script.module.amazon.database" version="0.0.1"/>
+    <import addon="plugin.program.chrome.launcher" version="1.0.7"/>
   </requires>
   <extension point="xbmc.python.pluginsource"
              library="default.py">
@@ -17,7 +18,7 @@
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <summary>Amazon Prime Video Streaming</summary>
-    <description>Movies and Television Shows for Prime Members</description>
+    <description>Movies and Television Shows for Prime Members[CR][CR]In order to use this addon you must have Chrome Launcher installed.</description>
     <disclaimer>Some parts of this addon may not be legal in your country of residence - please check with your local laws before installing.</disclaimer>
   </extension>
 </addon>

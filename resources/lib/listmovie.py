@@ -17,8 +17,8 @@ confluence_views = [500,501,502,503,504,508]
 
 ################################ Movie listing
 def LIST_MOVIE_ROOT():
-    cm = [('Export Favorited to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listmovie"&sitemode="LIST_MOVIES_FAVOR_FILTERED_EXPORT"&url="")' ) ]
-    common.addDir('Favorited','listmovie','LIST_MOVIES_FAVOR_FILTERED',cm=cm)
+    #cm = [('Export Favorited to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listmovie"&sitemode="LIST_MOVIES_FAVOR_FILTERED_EXPORT"&url="")' ) ]
+    #common.addDir('Favorited','listmovie','LIST_MOVIES_FAVOR_FILTERED',cm=cm)
     cm = [('Export All to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listmovie"&sitemode="LIST_MOVIES_EXPORT"&url="")' ) ]
     common.addDir('All Movies','listmovie','LIST_MOVIES',cm=cm)
     #common.addDir('Alphabetical','listmovie','LIST_MOVIE_AZ')
@@ -28,8 +28,8 @@ def LIST_MOVIE_ROOT():
     common.addDir('MPAA Rating','listmovie','LIST_MOVIE_TYPES','MPAA')
     common.addDir('Directors','listmovie','LIST_MOVIE_TYPES','DIRECTORS')
     #common.addDir('Actors','listmovie','LIST_MOVIE_TYPES','ACTORS')
-    cm = [('Export Watched to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listmovie"&sitemode="LIST_MOVIES_WATCHED_FILTERED_EXPORT"&url="")' ) ]
-    common.addDir('Watched History','listmovie','LIST_MOVIES_WATCHED_FILTERED',cm=cm)
+    #cm = [('Export Watched to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listmovie"&sitemode="LIST_MOVIES_WATCHED_FILTERED_EXPORT"&url="")' ) ]
+    #common.addDir('Watched History','listmovie','LIST_MOVIES_WATCHED_FILTERED',cm=cm)
     xbmcplugin.endOfDirectory(pluginhandle)
     
 def LIST_MOVIE_AZ():

@@ -88,6 +88,10 @@ def androidsig(url):
     return base64.encodestring(sig.digest()).replace('\n','')
 
 def addDir(name, mode, sitemode, url='', thumb='', fanart='', infoLabels=False, totalItems=0, cm=False ,page=1):
+    ok = True
+    isHD = name[-1:]
+    if isHD ==']':
+	return ok
     u  = sys.argv[0]
     u += '?url="'+urllib.quote_plus(url)+'"'
     u += '&mode="'+mode+'"'
@@ -119,15 +123,11 @@ def addVideo(name,url,poster='',fanart='',infoLabels=False,totalItems=0,cm=False
     u += '&mode="play"'
     u += '&name="'+urllib.quote_plus(name)+'"'
     u += '&sitemode="PLAYVIDEO"'
-    liz=xbmcgui.ListItem(name, thumbnailImage=poster)
-    liz.setInfo( type="Video", infoLabels=infoLabels)
     try:
-        if HD:
-            liz.addStreamInfo('video', { 'codec': 'h264', 'width':1280 ,'height' : 720 })
-        else:
-            liz.addStreamInfo('video', { 'codec': 'h264', 'width':720 ,'height' : 400 })
-        liz.addStreamInfo('audio', { 'codec': 'aac', 'channels' : 2 })
-    except:pass
+	liz=xbmcgui.ListItem(name, thumbnailImage=poster)
+    except:
+	liz=xbmcgui.ListItem(name)
+    liz.setInfo( type="Video", infoLabels=infoLabels)
     try:
         if fanart <> '' or fanart <> None:
             liz.setProperty('fanart_image',fanart)

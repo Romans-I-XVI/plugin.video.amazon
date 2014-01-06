@@ -18,12 +18,10 @@ confluence_views = [500,501,502,503,504,508]
 ###################### Television
 
 def LIST_TV_ROOT():
-    cm = [('Export Favorited to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_TVSHOWS_FAVOR_FILTERED_EXPORT"&url="")' )]
-    common.addDir('Favorited','listtv','LIST_TVSHOWS_FAVOR_FILTERED',cm=cm)
+    #cm = [('Export Favorited to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_TVSHOWS_FAVOR_FILTERED_EXPORT"&url="")' )]
+    #common.addDir('Favorited','listtv','LIST_TVSHOWS_FAVOR_FILTERED',cm=cm)
     cm = [('Export All to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_TVSHOWS_EXPORT"&url="")' )]
     common.addDir('All Shows','listtv','LIST_TVSHOWS',cm=cm)
-    cm = [('Export HDTV to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_HDTVSHOWS_EXPORT"&url="")' )]
-    common.addDir('HDTV Shows','listtv','LIST_HDTVSHOWS',cm=cm)
     common.addDir('Genres','listtv','LIST_TVSHOWS_TYPES','GENRE' )
     common.addDir('Years','listtv','LIST_TVSHOWS_TYPES','YEARS' )
     common.addDir('Networks','listtv','LIST_TVSHOWS_TYPES','NETWORKS')

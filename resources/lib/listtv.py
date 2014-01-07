@@ -246,14 +246,14 @@ def ADD_SEASON_ITEM(seasondata,mode='listtv',submode='LIST_EPISODES_DB',seriesTi
     else: displayname += 'Specials'
     if isHD: displayname += ' [COLOR FFE47911][HD][/COLOR]'
     cm = []
-    if inWatchlist:
-        cm.append( ('Remove from Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="removeTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
-    else:
-        cm.append( ('Add to Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="addTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #if inWatchlist:
+    #    cm.append( ('Remove from Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="removeTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #else:
+    #    cm.append( ('Add to Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="addTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
     cm.append( ('Export to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="xbmclibrary"&sitemode="EXPORT_SEASON"&asin="%s")' % ( urllib.quote_plus(asin) ) ) )
-    if common.addon.getSetting("editenable") == 'true':
-        cm.append( ('Rename Season', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="renameSeasondb"&title="%s"&season="%s"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(seriestitle), str(season),urllib.quote_plus(asin) ) ) )
-        cm.append( ('Remove Season', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="deleteSeasondb"&title="%s"&season="%s"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(seriestitle), str(season),urllib.quote_plus(asin) ) ) )
+    #if common.addon.getSetting("editenable") == 'true':
+     #   cm.append( ('Rename Season', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="renameSeasondb"&title="%s"&season="%s"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(seriestitle), str(season),urllib.quote_plus(asin) ) ) )
+    #    cm.append( ('Remove Season', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="deleteSeasondb"&title="%s"&season="%s"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(seriestitle), str(season),urllib.quote_plus(asin) ) ) )
     #try:fanart = common.args.fanart
     #except:
     fanart = poster

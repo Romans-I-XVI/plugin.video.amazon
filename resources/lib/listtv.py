@@ -18,8 +18,8 @@ confluence_views = [500,501,502,503,504,508]
 ###################### Television
 
 def LIST_TV_ROOT():
-    #cm = [('Export Favorited to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_TVSHOWS_FAVOR_FILTERED_EXPORT"&url="")' )]
-    #common.addDir('Favorited','listtv','LIST_TVSHOWS_FAVOR_FILTERED',cm=cm)
+    cm = [('Export Favorited to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_TVSHOWS_FAVOR_FILTERED_EXPORT"&url="")' )]
+    common.addDir('Favorited','listtv','LIST_TVSHOWS_FAVOR_FILTERED',cm=cm)
     cm = [('Export All to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="listtv"&sitemode="LIST_TVSHOWS_EXPORT"&url="")' )]
     common.addDir('All Shows','listtv','LIST_TVSHOWS',cm=cm)
     common.addDir('Genres','listtv','LIST_TVSHOWS_TYPES','GENRE' )
@@ -246,10 +246,10 @@ def ADD_SEASON_ITEM(seasondata,mode='listtv',submode='LIST_EPISODES_DB',seriesTi
     else: displayname += 'Specials'
     if isHD: displayname += ' [COLOR FFE47911][HD][/COLOR]'
     cm = []
-    if inWatchlist:
-        cm.append( ('Remove from Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="removeTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
-    else:
-        cm.append( ('Add to Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="addTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #if inWatchlist:
+    #    cm.append( ('Remove from Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="removeTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #else:
+    #    cm.append( ('Add to Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="addTVWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
     cm.append( ('Export to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="xbmclibrary"&sitemode="EXPORT_SEASON"&asin="%s")' % ( urllib.quote_plus(asin) ) ) )
     if common.addon.getSetting("editenable") == 'true':
         cm.append( ('Rename Season', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="renameSeasondb"&title="%s"&season="%s"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(seriestitle), str(season),urllib.quote_plus(asin) ) ) )
@@ -324,9 +324,9 @@ def ADD_EPISODE_ITEM(episodedata,seriesTitle=False):
     except: fanart=poster
 
     cm = []
-    if watched:
-        infoLabels['overlay']=7
-        cm.append( ('Unwatch', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="unwatchEpisodedb"&url="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
-    else: cm.append( ('Mark Watched', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="watchEpisodedb"&url="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #if watched:
+    #    infoLabels['overlay']=7
+    #    cm.append( ('Unwatch', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="unwatchEpisodedb"&url="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #else: cm.append( ('Mark Watched', 'XBMC.RunPlugin(%s?mode="tv"&sitemode="watchEpisodedb"&url="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
     cm.append( ('Export to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="xbmclibrary"&sitemode="EXPORT_EPISODE"&asin="%s")' % ( urllib.quote_plus(asin) ) ) )
     common.addVideo(displayname,url,poster,fanart,infoLabels=infoLabels,cm=cm,HD=isHD)

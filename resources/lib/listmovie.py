@@ -180,10 +180,10 @@ def ADD_MOVIE_ITEM(moviedata,override_url=False,inWatchlist=False):
     if runtime:
         infoLabels['Duration'] = runtime
     cm = []
-    if inWatchlist:
-        cm.append( ('Remove from Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="removeMovieWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
-    else:
-        cm.append( ('Add to Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="addMovieWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #if inWatchlist:
+    #    cm.append( ('Remove from Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="removeMovieWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
+    #else:
+    #    cm.append( ('Add to Watchlist', 'XBMC.RunPlugin(%s?mode="common"&sitemode="addMovieWatchlist"&asin="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
     if favor: cm.append( ('Remove from Favorites', 'XBMC.RunPlugin(%s?mode="movies"&sitemode="unfavorMoviedb"&url="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
     else: cm.append( ('Add to Favorites', 'XBMC.RunPlugin(%s?mode="movies"&sitemode="favorMoviedb"&url="%s")' % ( sys.argv[0], urllib.quote_plus(asin) ) ) )
     cm.append( ('Export to Library', 'XBMC.RunPlugin(plugin://plugin.video.amazon?mode="xbmclibrary"&sitemode="EXPORT_MOVIE"&asin="%s")' % ( urllib.quote_plus(asin) ) ) )

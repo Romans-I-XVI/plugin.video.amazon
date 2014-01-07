@@ -88,7 +88,6 @@ def androidsig(url):
     return base64.encodestring(sig.digest()).replace('\n','')
 
 def addDir(name, mode, sitemode, url='', thumb='', fanart='', infoLabels=False, totalItems=0, cm=False ,page=1):
-    cm=False #temporary removal of custom context menu
     ok = True
     isHD = name[-1:]
     if isHD ==']':
@@ -117,7 +116,6 @@ def addDir(name, mode, sitemode, url='', thumb='', fanart='', infoLabels=False, 
     xbmcplugin.addDirectoryItem(handle=pluginhandle,url=u,listitem=item,isFolder=True,totalItems=totalItems)
 
 def addVideo(name,url,poster='',fanart='',infoLabels=False,totalItems=0,cm=False,traileronly=False,HD=False):
-    cm=False #temporary removal of custom context menu
     if not infoLabels:
         infoLabels={ "Title": name}
     u  = sys.argv[0]
